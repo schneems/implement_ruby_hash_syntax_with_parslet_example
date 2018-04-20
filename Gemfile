@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'treetop'
+gem 'parslet'
+gem 'minitest'
+

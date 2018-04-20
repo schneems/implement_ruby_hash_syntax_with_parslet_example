@@ -126,7 +126,8 @@ EOL
 
 class RundocTransform < Parslet::Transform
   rule(:no_code => simple(:string)) { NoCode.new(string) }
-  rule(:code => simple(:hash)) {NoCode.new(hash)}
+  rule(:code => simple(:hash)) { raise hash }
+  sequence(:y)
 end
 
 class NoCode
@@ -161,7 +162,6 @@ puts   parser.parse(<<~EOL
 EOL
 )
 
-
 ast = transf.apply(
   parser.parse(<<~EOL
 :::>> $ cat Gemfile
@@ -170,4 +170,3 @@ EOL
 )
 puts "=="
 puts ast.inspect
-puts ast.eval

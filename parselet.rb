@@ -1,14 +1,10 @@
-
-
-
-
 require 'parslet'
 
 class MiniP < Parslet::Parser
   # Single character rules
   rule(:lparen)     { str('(') >> space? }
   rule(:rparen)     { str(')') >> space? }
-  rule(:comma)      { str(',') >> space? }
+  rule(:comma)      { space? >> str(',') >> space? }
 
   rule(:space)      { match('\s').repeat(1) }
   rule(:space?)     { space.maybe }
@@ -58,6 +54,6 @@ puts parser.parse('puts(1,2,3, 4+5, 10 + 1)')
 
 ast = transf.apply(
   parser.parse(
-    'puts(1,2,3, 4+5, 10 + 1)'))
+    'puts(1+1)'))
 
 ast.eval # => [1, 2, 3, 9]
