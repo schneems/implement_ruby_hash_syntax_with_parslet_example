@@ -536,6 +536,8 @@ The `Array()` ensures we are dealing with an array. The `each_with_object` itera
 
 This does the trick, and our test now passes!
 
+You can run the [code on GitHub](https://github.com/schneems/implement_ruby_hash_syntax_with_parslet_example/blob/master/example.rb).
+
 ## Just the beginning
 
 This article is already really long, but we're just scratching the surface of what you can do with parslet. You'll eventually want keep adding grammar rules until you're happy with your language. I mentioned, implementing arrays, or integers. Do you think you could do that now? You can also add a `root` node which is where your parser starts parsing by default, rather than calling an explicit parser rule like we've been doing in our tests.
