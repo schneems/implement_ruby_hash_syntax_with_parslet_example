@@ -1,4 +1,6 @@
-Before you can understand how to build a parser using `parslet`, you need to understand why you might want to. In my case I have a library called [rundoc]() it allows anyone to write documentation that can be "run". For example, someone might write docs that had this:
+## Implement Ruby Hash Syntax in Parslet
+
+Before you can understand how to build a parser using `parslet`, you need to understand why you might want to. In my case I have a library called [rundoc](https://github.com/schneems/rundoc) it allows anyone to write documentation that can be "run". For example, someone might write docs that had this:
 
     ```
     :::>> $ rails -v
@@ -15,7 +17,7 @@ Then in your documentation output you would get this result:
 
 While this doesn't seem that impreessive on the surface - if you have docs that need to be updated frequently: it can save a lot of time spent copying and pasting of output. Even more importantly, it can catch errors and regressions that you might not catch manually.
 
-I use this library to keep some docs in the Heroku devcenter such as the [getting started with Rails 5]() article. When a new version of Rails or Ruby is released I can update the doc, "run it", and then ensure that the output in the documentation matches perfectly with the output someone using the same commands would get. If a command fails, the the generation process fails, so the doc acts as a test as well.
+I use this library to keep some docs in the Heroku devcenter such as the [getting started with Rails 5](https://devcenter.heroku.com/articles/getting-started-with-rails5) article. When a new version of Rails or Ruby is released I can update the doc, "run it", and then ensure that the output in the documentation matches perfectly with the output someone using the same commands would get. If a command fails, the the generation process fails, so the doc acts as a test as well.
 
 The other added benefit of this approach is to the reader. By ensuring consistency of output of commands, the reader can better detect when something has gone wrong. Enough about my project though, this article is about building a parser. Why does `rundoc` need `parslet`?
 
@@ -42,9 +44,9 @@ Rather than trying to write one regex to rule them all, `parslet` allows me to b
 
 Parslet then has the concept of a "transformer" that can be used to turn complex parsed trees into any kind of Ruby code such as value objects that we want. When you combine parsers and transformers, you can write your own mini-language with whatever syntax rules you want. This is perfect for something like `rundoc`.
 
-While there are other parser libraries in Ruby, I chose parslet largely because of the amount of examples and documentation it had. The [documentation site]() is great, and there are [examples directly in the repo](). My only nit is that the [readme isn't rendered in markdown in github](), but I can get over it.
+While there are other parser libraries in Ruby, I chose parslet largely because of the amount of examples and documentation it had. The [documentation site](http://kschiess.github.io/parslet/documentation.html) is great, and there are [examples directly in the repo](https://github.com/kschiess/parslet/tree/master/example). My only minor-nit is that the [readme isn't rendered in markdown in github](https://github.com/kschiess/parslet/pull/187), but I can get over it.
 
-I also looked at the `treetop` gem, but I couldn't make much progress. I investigated the `racc` library which is great if you're familiar with `yacc` syntax (which I'm not). Yacc is the syntax that [Ruby uses to implement it's own grammar](). If you want to go down that Rabbit hole, Aaron recomended the O'Reilly book on Yacc which seems good, but requires more reading that I was willing to put into this project.
+I also looked at the `treetop` gem, but I couldn't make much progress. I investigated the `racc` library which is great if you're familiar with `yacc` syntax (which I'm not). Yacc is the syntax that [Ruby uses to implement it's own grammar](https://github.com/ruby/ruby/blob/trunk/parse.y). If you want to go down that Rabbit hole, Aaron recomended the O'Reilly book on Yacc which seems good, but requires more reading that I was willing to put into this project.
 
 Now that you know my problem and my toolset, it's time for a tutorial! I'm writing this: not as an expert in parsers (or in `parslet` even), but really to convince myself that I understand what I've already done. When you can explain how you did somethign to someone else, then you actually understand it. Without further ado, here's the tutorial.
 
@@ -326,7 +328,7 @@ Would now look like this:
 "world"
 ```
 
-There is one tricky point in this example. Not only was the value of "world" modified (we called `to_s` on it) but the entire hash went away, and was replaced by the value we returned. This is a sublty that is kind of pointed out in the [documentation for transformers](), but not really that well illustrated.
+There is one tricky point in this example. Not only was the value of "world" modified (we called `to_s` on it) but the entire hash went away, and was replaced by the value we returned. This is a sublty that is kind of pointed out in the [documentation for transformers](http://kschiess.github.io/parslet/transform.html), but not really that well illustrated.
 
 Here's the example they give, but with more details. If you have a tree like this:
 
@@ -538,7 +540,7 @@ This does the trick, and our test now passes!
 
 This article is already really long, but we're just scratching the surface of what you can do with parslet. You'll eventually want keep adding grammar rules until you're happy with your language. I mentioned, implementing arrays, or integers. Do you think you could do that now? You can also add a `root` node which is where your parser starts parsing by default, rather than calling an explicit parser rule like we've been doing in our tests.
 
-If you followed this tutorial, you're mostly there already! I recommend also walking through the official [parslet tutorial]() and looking at some of the other examples. If you get stuck, try going back to the basics, as well as writing more & smaller tests.
+If you followed this tutorial, you're mostly there already! I recommend also walking through the official [parslet tutorial](http://kschiess.github.io/parslet/get-started.html) and looking at some of the other examples. If you get stuck, try going back to the basics, as well as writing more & smaller tests.
 
 When constructing parsers, try to imagine what kind of a "tree" your desired grammar might produce, and try working starting from the leaves. Once you've got the parser, try working in the same direction with your transformers, building from the leaves inward. While this will feel clunky at first, you'll get the hang of it over time.
 
