@@ -15,9 +15,9 @@ Then in your documentation output you would get this result:
     Rails 5.2.0
     ```
 
-While this doesn't seem that impreessive on the surface - if you have docs that need to be updated frequently: it can save a lot of time spent copying and pasting of output. Even more importantly, it can catch errors and regressions that you might not catch manually.
+While this doesn't seem that impressive on the surface - if you have docs that need to be updated frequently: it can save a lot of time spent copying and pasting of output. Even more importantly, it can catch errors and regressions that you might not catch manually.
 
-I use this library to keep some docs in the Heroku devcenter such as the [getting started with Rails 5](https://devcenter.heroku.com/articles/getting-started-with-rails5) article. When a new version of Rails or Ruby is released I can update the doc, "run it", and then ensure that the output in the documentation matches perfectly with the output someone using the same commands would get. If a command fails, the the generation process fails, so the doc acts as a test as well.
+I use this library to keep some docs in the Heroku devcenter such as the [getting started with Rails 5](https://devcenter.heroku.com/articles/getting-started-with-rails5) article. When a new version of Rails or Ruby is released I can update the doc, "run it", and then ensure that the output in the documentation matches perfectly with the output someone using the same commands would get. If a command fails, the generation process fails, so the doc acts as a test as well.
 
 The other added benefit of this approach is to the reader. By ensuring consistency of output of commands, the reader can better detect when something has gone wrong. Enough about my project though, this article is about building a parser. Why does `rundoc` need `parslet`?
 
@@ -46,7 +46,7 @@ Parslet then has the concept of a "transformer" that can be used to turn complex
 
 While there are other parser libraries in Ruby, I chose parslet largely because of the amount of examples and documentation it had. The [documentation site](http://kschiess.github.io/parslet/documentation.html) is great, and there are [examples directly in the repo](https://github.com/kschiess/parslet/tree/master/example). My only minor-nit is that the [readme isn't rendered in markdown in github](https://github.com/kschiess/parslet/pull/187), but I can get over it.
 
-I also looked at the `treetop` gem, but I couldn't make much progress. I investigated the `racc` library which is great if you're familiar with `yacc` syntax (which I'm not). Yacc is the syntax that [Ruby uses to implement it's own grammar](https://github.com/ruby/ruby/blob/trunk/parse.y). If you want to go down that Rabbit hole, Aaron recomended the O'Reilly book on Yacc which seems good, but requires more reading that I was willing to put into this project.
+I also looked at the `treetop` gem, but I couldn't make much progress. I investigated the `racc` library which is great if you're familiar with `yacc` syntax (which I'm not). Yacc is the syntax that [Ruby uses to implement it's own grammar](https://github.com/ruby/ruby/blob/trunk/parse.y). If you want to go down that Rabbit hole, Aaron recommended the O'Reilly book on Yacc which seems good, but requires more reading than I was willing to put into this project.
 
 Now that you know my problem and my toolset, it's time for a tutorial! I'm writing this: not as an expert in parsers (or in `parslet` even), but really to convince myself that I understand what I've already done. When you can explain how you did somethign to someone else, then you actually understand it. Without further ado, here's the tutorial.
 
@@ -161,7 +161,7 @@ class MyParser < Parslet::Parser
 end
 ```
 
-While we understand `spaces?` and `str(',')`, what is this `>>` operator doing? I don't know the term for it, but I mentally named it "and then". I read this rule as "Match spaces (if there are any), and then explicitly match a string of ',' and then match spaces (if there are any)". Now that we have a rule, lets make sure our tests pass:
+While we understand `spaces?` and `str(',')`, what is this `>>` operator doing? I don't know the term for it, but I mentally named it "and then". I read this rule as "Match spaces (if there are any), and then explicitly match a string of ',' and then match spaces (if there are any)". Now that we have a rule, let's make sure our tests pass:
 
 ```
 Finished in 0.001970s, 1015.2284 runs/s, 1015.2284 assertions/s.
@@ -196,7 +196,7 @@ rule(:string) {
 
 You've seen everything here before, except for `absent?`, `any`, and `as`. The `absent?` method checks for the lack of that character. The `any` keyword will match, well, anything. The `any` character is shorhand for `match('.')`. The combination of `str("'").absent? >> any` is checking each character that it does not contain a `"` and then it will match any other character.
 
-What does the `as` do? This our way of telling parslet's that we are dealing with a signifigant part of our grammar. While I don't necessarily need to know how many spaces are around a comma, I'll likely want to the contents of a string. That's why I added `as(:string)`.
+What does the `as` do? This is our way of telling parslet's that we are dealing with a significant part of our grammar. While I don't necessarily need to know how many spaces are around a comma, I'll likely want to know the contents of a string. That's why I added `as(:string)`.
 
 When you run the tests you'll see that it passes. I want to go one step further though and actually verify the format of the parsed tree (instead of saying "not nil"). To do that I'll change the test:
 
@@ -210,7 +210,7 @@ When you run the tests you'll see that it passes. I want to go one step further 
   end
 ```
 
-In parslet each `as` produces a hash (and potentially an Array). As we keep going you'll see that they will be deeply nested. While a parser builds a tree, a "transformer" takes a tree as an input and simplifies it to make it smaller.
+In parslet, each `as` produces a hash (and potentially an Array). As we keep going you'll see that they will be deeply nested. While a parser builds a tree, a "transformer" takes a tree as an input and simplifies it to make it smaller.
 
 To understand, we'll try to add a grammar for Ruby's hash. Eventually we want to parse `{ hello: "world" }`. To start though we can match a subset of this, just the inner part `hello: "world"`. This is also similar to keyword args.
 
@@ -235,7 +235,7 @@ def test_key
 end
 ```
 
-The key rule needs to allow for a space at the beginning and the end. You'll remember that a key is a reptition of characters that are not `:` or a space, and that ends in a colon `:`. Here's what I came up with:
+The key rule needs to allow for a space at the beginning and the end. You'll remember that a key is a repetition of characters that are not `:` or a space, and that ends in a colon `:`. Here's what I came up with:
 
 ```ruby
 rule(:key) {
@@ -268,7 +268,7 @@ rule(:key_value) {
 }
 ```
 
-We are really close to finishing our grammar, but before we do. I want to take a look at the output of the tree for this key/value. It looks like this:
+We are really close to finishing our grammar, but before we do, I want to take a look at the output of the tree for this key/value. It looks like this:
 
 ```
 { :key_value => { :key => "hello"@1, :val => { :string => "world"@9 }}}
@@ -328,7 +328,7 @@ Would now look like this:
 "world"
 ```
 
-There is one tricky point in this example. Not only was the value of "world" modified (we called `to_s` on it) but the entire hash went away, and was replaced by the value we returned. This is a sublty that is kind of pointed out in the [documentation for transformers](http://kschiess.github.io/parslet/transform.html), but not really that well illustrated.
+There is one tricky point in this example. Not only was the value of "world" modified (we called `to_s` on it) but the entire hash went away, and was replaced by the value we returned. This is a subtly that is kind of pointed out in the [documentation for transformers](http://kschiess.github.io/parslet/transform.html), but not really that well illustrated.
 
 Here's the example they give, but with more details. If you have a tree like this:
 
@@ -345,7 +345,7 @@ You cannot match `dog` by itself. I.e. a rule like this makes no sense:
 rule(:dog => 'terrier') { 'foo' }
 ```
 
-Because you're not only modifing the value, you're modifying the entire match (the key and the value). If this were a legal match it would produce something like this:
+Because you're not only modifying the value, you're modifying the entire match (the key and the value). If this was a legal match it would produce something like this:
 
 ```
 {
@@ -396,7 +396,7 @@ def test_parses_multiple_key_value_pairs
 end
 ```
 
-In this case we already have a `key_value` rule, and a `comma` rule, we either want to match a single key/value pair, or a key/value pair followed by a comma and another key/value. This latter pattern can repeat indefinetly. Here's how this looks as a parslet rule:
+In this case we already have a `key_value` rule, and a `comma` rule, we either want to match a single key/value pair, or a key/value pair followed by a comma and another key/value. This latter pattern can repeat indefinitely. Here's how this looks as a parslet rule:
 
 ```
 rule(:named_args) {
@@ -464,7 +464,7 @@ rule(:hash_obj) {
 
 We're essentially letting the `named_args` do the heavy lifting. You might also notice that I chose no to match anything with an `as` method. In this case nesting our key/value pair one level deeper in a `hash` key, doesn't really buy anything for us right now.
 
-While this gets the tests to pass. I want to go one step further.
+While this gets the tests to pass, I want to go one step further.
 
 ```ruby
 actual = MyTransformer.new.apply(tree)
@@ -472,7 +472,7 @@ expected = { hello: "world", hi: "there" }
 assert_equal expected, actual
 ```
 
-In this case we're transforming a string representation of a hash into an actual hash. While it might not seem that exciting consdering we could have simply run `eval` to produce the same thing, keep in mind that this ability to implement a grammar and build a transformer to produce the objects we want allows us to implemnt virtually any language of our choosing, not just replicate Ruby features.
+In this case we're transforming a string representation of a hash into an actual hash. While it might not seem that exciting, considering we could have simply run `eval` to produce the same thing, keep in mind that this ability to implement a grammar and build a transformer to produce the objects we want allows us to implement virtually any language of our choosing, not just replicate Ruby features.
 
 For now this is only a failing test. Here's the tree we can manipulate with our transformer:
 
@@ -488,7 +488,7 @@ In our transformer we need to match this entire hash, there is only one key in t
 
 We already have a transformer that will convert the `{:string=>"there"@24}` into simply `"there"`.
 
-Parslet provides the ability to match ANY values with the keyword `subtree`. This is dangerous because you are now responsible for handling any inconsistencies in the input. For example rememeber how we looked at how this rule could return either a single hash or an array of hashes, when you choose to match via `subtree` you're now responsible for knowing that and doing the right thing.
+Parslet provides the ability to match ANY values with the keyword `subtree`. This is dangerous because you are now responsible for handling any inconsistencies in the input. For example, remember we looked at how this rule could return either a single hash or an array of hashes, when you choose to match via `subtree` you're now responsible for knowing that and doing the right thing.
 
 Let's make sure that we can match this hash, then we'll add logic
 
@@ -513,9 +513,9 @@ The output should be an array like this:
 ]
 ```
 
-Notice that our `val` is simply a string here, and not the complex hash object. This is because our prior tranformation was already applied.
+Notice that our `val` is simply a string here, and not the complex hash object. This is because our prior transformation was already applied.
 
-To transform this into a hash, we need to ensure the input is always consistent, then build a hash by looping through each element in our input and adding they keys and values to that hash. Here's my solution:
+To transform this into a hash, we need to ensure the input is always consistent, then build a hash by looping through each element in our input and adding the keys and values to that hash. Here's my solution:
 
 
 ```ruby
@@ -540,11 +540,11 @@ You can run the [code on GitHub](https://github.com/schneems/implement_ruby_hash
 
 ## Just the beginning
 
-This article is already really long, but we're just scratching the surface of what you can do with parslet. You'll eventually want keep adding grammar rules until you're happy with your language. I mentioned, implementing arrays, or integers. Do you think you could do that now? You can also add a `root` node which is where your parser starts parsing by default, rather than calling an explicit parser rule like we've been doing in our tests.
+This article is already really long, but we're just scratching the surface of what you can do with parslet. You'll eventually want to keep adding grammar rules until you're happy with your language. I mentioned, implementing arrays, or integers. Do you think you could do that now? You can also add a `root` node which is where your parser starts parsing by default, rather than calling an explicit parser rule like we've been doing in our tests.
 
 If you followed this tutorial, you're mostly there already! I recommend also walking through the official [parslet tutorial](http://kschiess.github.io/parslet/get-started.html) and looking at some of the other examples. If you get stuck, try going back to the basics, as well as writing more & smaller tests.
 
-When constructing parsers, try to imagine what kind of a "tree" your desired grammar might produce, and try working starting from the leaves. Once you've got the parser, try working in the same direction with your transformers, building from the leaves inward. While this will feel clunky at first, you'll get the hang of it over time.
+When constructing parsers, try to imagine what kind of a "tree" your desired grammar might produce, and try working, starting from the leaves. Once you've got the parser, try working in the same direction with your transformers, building from the leaves inward. While this will feel clunky at first, you'll get the hang of it over time.
 
 When all else fails, write a blog post!
 
